@@ -13,6 +13,12 @@ import "./index.css";
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const Upload = lazy(() => import("./pages/Upload.tsx"));
+const DatasetDetail = lazy(() => import("./pages/DatasetDetail.tsx"));
+const NewReport = lazy(() => import("./pages/NewReport.tsx"));
+const ReportView = lazy(() => import("./pages/ReportView.tsx"));
+const ReportsLibrary = lazy(() => import("./pages/ReportsLibrary.tsx"));
+const Chat = lazy(() => import("./pages/Chat.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -129,6 +135,62 @@ createRoot(document.getElementById("root")!).render(
                 element={
                   <RequireAuth>
                     <Dashboard />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/upload"
+                element={
+                  <RequireAuth>
+                    <Upload />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/datasets/:datasetId"
+                element={
+                  <RequireAuth>
+                    <DatasetDetail />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/datasets/:datasetId/report"
+                element={
+                  <RequireAuth>
+                    <NewReport />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/datasets/:datasetId/chat"
+                element={
+                  <RequireAuth>
+                    <Chat />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/reports"
+                element={
+                  <RequireAuth>
+                    <ReportsLibrary />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/reports/new"
+                element={
+                  <RequireAuth>
+                    <NewReport />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/reports/:reportId"
+                element={
+                  <RequireAuth>
+                    <ReportView />
                   </RequireAuth>
                 }
               />
