@@ -49,9 +49,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Sidebar */}
         <aside className="no-print sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r bg-sidebar px-3 py-4 lg:flex">
           <NavLink to="/dashboard" className="mb-6 flex items-center gap-2 px-2">
-            <img src={logo} alt="Insight Navigator" className="size-8 rounded-lg" />
+            <img src={logo} alt="ReportGen" className="size-8 rounded-lg" />
             <div className="flex flex-col">
-              <span className="font-display text-sm font-bold">Insight Navigator</span>
+              <span className="font-display text-sm font-bold">ReportGen</span>
               <span className="text-[11px] text-muted-foreground">Business reporting</span>
             </div>
             <BarChart3 className="ml-auto size-4 text-primary" />
@@ -89,7 +89,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <header className="no-print sticky top-0 z-10 flex items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur lg:px-2">
             <div className="flex items-center gap-2 lg:hidden">
               <img src={logo} alt="logo" className="size-7 rounded-md" />
-              <span className="font-display text-sm font-bold">Insight Navigator</span>
+              <span className="font-display text-sm font-bold">ReportGen</span>
             </div>
             <div className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex">
               {org?.name ?? "Workspace"}

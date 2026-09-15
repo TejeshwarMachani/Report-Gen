@@ -111,8 +111,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
           {/* Pitch panel */}
           <div className="hidden lg:block">
             <Link to="/" className="mb-8 flex items-center gap-2">
-              <img src={logo} alt="Insight Navigator" className="size-9 rounded-lg" />
-              <span className="font-display text-lg font-bold tracking-tight">Insight Navigator</span>
+              <img src={logo} alt="ReportGen" className="size-9 rounded-lg" />
+              <span className="font-display text-lg font-bold tracking-tight">ReportGen</span>
             </Link>
             <h1 className="font-display text-3xl font-bold leading-tight tracking-tight">
               Your data already knows the answer.
