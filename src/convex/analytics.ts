@@ -3,7 +3,6 @@ import { ColumnType } from "./schema";
 
 export type DatasetDoc = Doc<"datasets">;
 export type Col = DatasetDoc["columns"][number];
-type Row = any[];
 
 // ---------- type coercion ----------
 

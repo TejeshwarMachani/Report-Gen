@@ -79,7 +79,7 @@ export function exportPdf(report: ReportDoc) {
     report.intent,
   )}</div>
   ${parts.join("")}
-  <script>window.onload=function(){setTimeout(function(){window.print()},300)}<\/script>
+  <script>window.onload=function(){setTimeout(function(){window.print()},300)}</script>
   </body></html>`);
   w.document.close();
 }

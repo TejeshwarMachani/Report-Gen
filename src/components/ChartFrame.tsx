@@ -16,12 +16,22 @@ import { fmtCompact } from "@/lib/report";
 
 const AXIS_STYLE = { fontSize: 11, fill: "var(--muted-foreground)" };
 
-function TooltipBox({ active, payload, label }: any) {
+type TooltipEntry = { name?: string; value?: number | string };
+
+function TooltipBox({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: TooltipEntry[];
+  label?: string | number;
+}) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border bg-popover px-3 py-2 text-xs shadow-md">
       <p className="font-medium">{label}</p>
-      {payload.map((p: any, i: number) => (
+      {payload.map((p, i) => (
         <p key={i} className="tabular-nums text-muted-foreground">
           {p.name}: <span className="font-medium text-foreground">{p.value?.toLocaleString()}</span>
         </p>

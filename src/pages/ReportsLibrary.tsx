@@ -20,7 +20,10 @@ export default function ReportsLibrary() {
   const [search, setSearch] = useState("");
 
   const datasetName = useCallback(
-    (id: string) => datasets?.find((d) => d._id === id)?.name ?? "Deleted dataset",
+    (id: string) => {
+      if (datasets === undefined) return "…";
+      return datasets.find((d) => d._id === id)?.name ?? "Deleted dataset";
+    },
     [datasets],
   );
 

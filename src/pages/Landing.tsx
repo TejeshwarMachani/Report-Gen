@@ -4,6 +4,7 @@ import {
   BarChart3,
   Check,
   FileText,
+  Menu,
   MessageSquareText,
   ShieldCheck,
   Sparkles,
@@ -12,9 +13,22 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "react-router";
 import logo from "@/assets/logo.svg";
+
+const NAV_LINKS = [
+  { href: "#features", label: "Product" },
+  { href: "#how", label: "How it works" },
+  { href: "#trust", label: "Accuracy" },
+];
 
 const fadeUp = {
   initial: { opacity: 0, y: 16 },
@@ -53,12 +67,15 @@ export default function Landing() {
             <span className="font-display text-base font-bold tracking-tight">ReportGen</span>
           </Link>
           <nav className="hidden items-center gap-7 text-sm font-medium text-muted-foreground md:flex">
-            <a href="#features" className="transition-colors hover:text-foreground">Product</a>
-            <a href="#how" className="transition-colors hover:text-foreground">How it works</a>
-            <a href="#trust" className="transition-colors hover:text-foreground">Accuracy</a>
+            {NAV_LINKS.map((l) => (
+              <a key={l.href} href={l.href} className="transition-colors hover:text-foreground">
+                {l.label}
+              </a>
+            ))}
           </nav>
           <div className="flex items-center gap-1.5">
-            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+            <ThemeToggle className="hidden sm:inline-flex" />
+            <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
               <Link to={isAuthenticated ? "/dashboard" : "/auth"}>Sign in</Link>
             </Button>
             <Button asChild size="sm" className="gap-1.5">
@@ -66,6 +83,56 @@ export default function Landing() {
                 Start free <ArrowRight className="size-3.5" />
               </Link>
             </Button>
+
+            {/* Mobile menu */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden"
+                  aria-label="Open navigation menu"
+                >
+                  <Menu className="size-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="flex w-72 flex-col gap-6 p-6">
+                <div className="flex items-center gap-2">
+                  <img src={logo} alt="ReportGen" className="size-8 rounded-lg" />
+                  <span className="font-display text-base font-bold tracking-tight">
+                    ReportGen
+                  </span>
+                </div>
+                <nav className="flex flex-col gap-1">
+                  {NAV_LINKS.map((l) => (
+                    <SheetClose asChild key={l.href}>
+                      <a
+                        href={l.href}
+                        className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                      >
+                        {l.label}
+                      </a>
+                    </SheetClose>
+                  ))}
+                </nav>
+                <div className="mt-auto flex flex-col gap-2">
+                  <div className="flex items-center justify-between rounded-lg border px-3 py-1.5">
+                    <span className="text-sm text-muted-foreground">Appearance</span>
+                    <ThemeToggle />
+                  </div>
+                  <Button asChild variant="outline">
+                    <Link to={isAuthenticated ? "/dashboard" : "/auth"}>
+                      Sign in
+                    </Link>
+                  </Button>
+                  <Button asChild>
+                    <Link to={dashboardCta}>
+                      Start free <ArrowRight className="size-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
@@ -373,9 +440,11 @@ Result:
             <span className="font-medium text-foreground">ReportGen</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#features" className="transition-colors hover:text-foreground">Product</a>
-            <a href="#how" className="transition-colors hover:text-foreground">How it works</a>
-            <a href="#trust" className="transition-colors hover:text-foreground">Accuracy</a>
+            {NAV_LINKS.map((l) => (
+              <a key={l.href} href={l.href} className="transition-colors hover:text-foreground">
+                {l.label}
+              </a>
+            ))}
           </div>
           <p>© {new Date().getFullYear()} ReportGen · AI business reports from your own data.</p>
         </div>

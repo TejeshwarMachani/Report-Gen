@@ -13,6 +13,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/hooks/use-auth";
 import logo from "@/assets/logo.svg";
 import { ArrowRight, Check, Loader2, Mail, UserX } from "lucide-react";
@@ -134,7 +135,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
       </div>
 
       {/* Form panel */}
-      <div className="flex flex-1 items-center justify-center px-4 py-12">
+      <div className="relative flex flex-1 items-center justify-center px-4 py-12">
+        <div className="absolute right-4 top-4">
+          <ThemeToggle />
+        </div>
         <Card className="w-full max-w-[400px] border shadow-md pb-0">
             {step === "signIn" ? (
               <>

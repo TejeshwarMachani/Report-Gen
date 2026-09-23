@@ -9,6 +9,7 @@ import {
   LogOut,
   UploadCloud,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -100,7 +101,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <div className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex">
               {org?.name ?? "Workspace"}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 rounded-full p-1 pr-3 transition-colors hover:bg-accent">
