@@ -105,33 +105,37 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
   };
 
   return (
-    <div className="hero-backdrop flex min-h-screen flex-col">
-      <div className="flex flex-1 items-center justify-center px-4 py-10">
-        <div className="grid w-full max-w-4xl items-center gap-10 lg:grid-cols-2">
-          {/* Pitch panel */}
-          <div className="hidden lg:block">
-            <Link to="/" className="mb-8 flex items-center gap-2">
-              <img src={logo} alt="ReportGen" className="size-9 rounded-lg" />
-              <span className="font-display text-lg font-bold tracking-tight">ReportGen</span>
-            </Link>
-            <h1 className="font-display text-3xl font-bold leading-tight tracking-tight">
-              Your data already knows the answer.
-            </h1>
-            <p className="mt-3 max-w-md text-sm leading-7 text-muted-foreground">
-              Sign in to upload a dataset, generate readable reports, ask follow-up questions, and forecast what's next.
-            </p>
-            <ul className="mt-6 flex flex-col gap-3">
-              {HIGHLIGHTS.map((h) => (
-                <li key={h} className="flex items-start gap-2.5 text-sm leading-6">
-                  <Check className="mt-1 size-4 shrink-0 text-primary" />
-                  {h}
-                </li>
-              ))}
-            </ul>
-          </div>
+    <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
+      {/* Brand panel */}
+      <div className="relative hidden flex-col justify-between bg-foreground p-10 text-background lg:flex xl:p-14">
+        <Link to="/" className="flex items-center gap-2.5">
+          <img src={logo} alt="ReportGen" className="size-9 rounded-lg" />
+          <span className="font-display text-lg font-bold tracking-tight">ReportGen</span>
+        </Link>
+        <div>
+          <h1 className="font-display text-3xl font-bold leading-tight tracking-tight xl:text-4xl">
+            Your data already knows the answer.
+          </h1>
+          <p className="mt-4 max-w-md text-sm leading-7 opacity-70">
+            Upload a dataset, get a readable report in minutes, ask follow-up questions, and forecast what's next.
+          </p>
+          <ul className="mt-8 flex flex-col gap-3.5">
+            {HIGHLIGHTS.map((h) => (
+              <li key={h} className="flex items-start gap-2.5 text-sm leading-6">
+                <Check className="mt-1 size-4 shrink-0 opacity-80" />
+                <span className="opacity-90">{h}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="text-xs opacity-60">
+          Deterministic computations · Plain-English reports · Export to PDF &amp; Word
+        </p>
+      </div>
 
-          {/* Form panel */}
-          <Card className="min-w-[350px] border shadow-md pb-0">
+      {/* Form panel */}
+      <div className="flex flex-1 items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-[400px] border shadow-md pb-0">
             {step === "signIn" ? (
               <>
                 <CardHeader className="text-center lg:text-left">
@@ -244,8 +248,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 ← Back to home
               </Link>
             </div>
-          </Card>
-        </div>
+        </Card>
       </div>
     </div>
   );

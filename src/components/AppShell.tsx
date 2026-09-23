@@ -3,9 +3,9 @@ import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { NavLink, useNavigate } from "react-router";
 import {
-  BarChart3,
   FileBarChart,
   LayoutDashboard,
+  LifeBuoy,
   LogOut,
   UploadCloud,
 } from "lucide-react";
@@ -31,9 +31,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   const navItems = [
-    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/upload", label: "Upload data", icon: UploadCloud },
-    { to: "/reports", label: "Reports", icon: FileBarChart },
+    { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
+    { to: "/upload", label: "Upload data", icon: UploadCloud, exact: false },
+    { to: "/reports", label: "Reports", icon: FileBarChart, exact: false },
   ];
 
   const initials = (user?.name || user?.email || "U")
@@ -45,28 +45,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-7xl gap-0 lg:gap-6 lg:px-6">
+      <div className="mx-auto flex w-full max-w-[1440px] lg:gap-0">
         {/* Sidebar */}
-        <aside className="no-print sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r bg-sidebar px-3 py-4 lg:flex">
-          <NavLink to="/dashboard" className="mb-6 flex items-center gap-2 px-2">
-            <img src={logo} alt="ReportGen" className="size-8 rounded-lg" />
+        <aside className="no-print sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r bg-sidebar px-3 py-5 lg:flex">
+          <NavLink to="/dashboard" className="mb-7 flex items-center gap-2.5 px-2">
+            <img src={logo} alt="ReportGen" className="size-9 rounded-lg shadow-sm" />
             <div className="flex flex-col">
-              <span className="font-display text-sm font-bold">ReportGen</span>
+              <span className="font-display text-[15px] font-bold tracking-tight">ReportGen</span>
               <span className="text-[11px] text-muted-foreground">Business reporting</span>
             </div>
-            <BarChart3 className="ml-auto size-4 text-primary" />
           </NavLink>
 
+          <p className="eyebrow px-3 pb-2">Workspace</p>
           <nav className="flex flex-col gap-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
+                end={item.exact}
                 className={({ isActive }) =>
-                  `flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  `group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground"
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   }`
                 }
               >
@@ -76,19 +77,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          <div className="mt-auto rounded-xl border bg-card p-3">
-            <p className="text-xs font-semibold">Free plan</p>
-            <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
-              1 workspace · CSV &amp; XLSX uploads
-            </p>
+          <div className="mt-auto flex flex-col gap-3">
+            <div className="flex items-center gap-2.5 rounded-xl border bg-card px-3 py-3">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <LifeBuoy className="size-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-semibold">{org?.name ?? "My workspace"}</p>
+                <p className="text-[11px] text-muted-foreground">Free plan · CSV &amp; XLSX</p>
+              </div>
+            </div>
           </div>
         </aside>
 
         {/* Main column */}
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="no-print sticky top-0 z-10 flex items-center justify-between gap-3 border-b bg-background/80 px-4 py-3 backdrop-blur lg:px-2">
+          <header className="no-print sticky top-0 z-10 flex h-14 items-center justify-between gap-3 border-b bg-background/80 px-4 backdrop-blur lg:px-8">
             <div className="flex items-center gap-2 lg:hidden">
-              <img src={logo} alt="logo" className="size-7 rounded-md" />
+              <img src={logo} alt="ReportGen" className="size-7 rounded-md" />
               <span className="font-display text-sm font-bold">ReportGen</span>
             </div>
             <div className="hidden items-center gap-2 text-sm text-muted-foreground lg:flex">
@@ -122,7 +128,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
           </header>
 
-          <main className="min-w-0 flex-1 px-4 pb-16 pt-6 lg:px-8">{children}</main>
+          <main className="min-w-0 flex-1 px-4 pb-20 pt-8 lg:px-10">{children}</main>
 
           {/* Mobile nav */}
           <nav className="no-print fixed inset-x-0 bottom-0 z-20 flex border-t bg-background/95 backdrop-blur lg:hidden">
@@ -130,6 +136,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <NavLink
                 key={item.to}
                 to={item.to}
+                end={item.exact}
                 className={({ isActive }) =>
                   `flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium ${
                     isActive ? "text-primary" : "text-muted-foreground"

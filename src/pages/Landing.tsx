@@ -39,8 +39,8 @@ export default function Landing() {
         <div className="mx-auto flex h-9 w-full max-w-6xl items-center justify-center gap-2 px-4 text-xs font-medium">
           <Sparkles className="size-3.5" />
           <span>ReportGen turns a raw CSV into a board-ready report in about a minute.</span>
-          <Link to={dashboardCta} className="hidden underline underline-offset-4 sm:inline">
-            Try it free
+          <Link to={dashboardCta} className="hidden items-center gap-0.5 underline underline-offset-4 hover:opacity-80 sm:inline-flex">
+            Try it free <ArrowRight className="size-3" />
           </Link>
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function Landing() {
           </div>
 
           {/* Product mock — modeled on the actual report view */}
-          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.2 }}>
+          <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.2 }} className="lg:-mr-8">
             <div className="overflow-hidden rounded-xl border bg-card shadow-xl shadow-foreground/[0.06]">
               {/* Mock window chrome */}
               <div className="flex items-center gap-1.5 border-b bg-muted/60 px-3 py-2.5">
@@ -164,9 +164,9 @@ export default function Landing() {
                   </div>
                   <div className="mt-3 flex h-24 items-end gap-1.5">
                     {[38, 46, 42, 55, 61, 58, 67, 72, 70, 78, 84, 88].map((h, i) => (
-                      <div key={i} className="flex-1">
+                      <div key={i} className="group relative flex-1">
                         <div
-                          className={`w-full rounded-sm ${i >= 10 ? "bg-primary/40" : "bg-primary"}`}
+                          className={`w-full rounded-sm transition-opacity group-hover:opacity-80 ${i >= 10 ? "bg-primary/40" : "bg-primary"}`}
                           style={{ height: `${h}%` }}
                         />
                       </div>
@@ -370,7 +370,12 @@ Result:
             <img src={logo} alt="ReportGen" className="size-6 rounded-md" />
             <span className="font-medium text-foreground">ReportGen</span>
           </div>
-          <p>AI business reports from your own data.</p>
+          <div className="flex items-center gap-6">
+            <a href="#features" className="transition-colors hover:text-foreground">Product</a>
+            <a href="#how" className="transition-colors hover:text-foreground">How it works</a>
+            <a href="#trust" className="transition-colors hover:text-foreground">Accuracy</a>
+          </div>
+          <p>© {new Date().getFullYear()} ReportGen · AI business reports from your own data.</p>
         </div>
       </footer>
     </motion.div>

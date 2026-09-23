@@ -38,10 +38,8 @@ export default function Dashboard() {
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">
-              {org?.name ?? "Workspace"}
-            </p>
-            <h1 className="font-display mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+            <p className="eyebrow">{org?.name ?? "Workspace"}</p>
+            <h1 className="font-display mt-1.5 text-2xl font-bold tracking-tight sm:text-3xl">
               Welcome{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
             </h1>
           </div>
@@ -65,29 +63,35 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:grid-cols-3">
               <Card className="card-hover">
                 <CardHeader className="pb-2">
-                  <CardDescription>Datasets</CardDescription>
+                  <CardDescription className="flex items-center gap-1.5">
+                    <UploadCloud className="size-3.5" /> Datasets
+                  </CardDescription>
                   <CardTitle className="tabular-nums text-3xl">{datasets!.length}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Link to="/upload" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-                    <UploadCloud className="size-3.5" /> Upload another
+                    Upload another
                   </Link>
                 </CardContent>
               </Card>
               <Card className="card-hover">
                 <CardHeader className="pb-2">
-                  <CardDescription>Reports ready</CardDescription>
+                  <CardDescription className="flex items-center gap-1.5">
+                    <FileBarChart className="size-3.5" /> Reports ready
+                  </CardDescription>
                   <CardTitle className="tabular-nums text-3xl">{readyReports.length}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Link to="/reports" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-                    <FileBarChart className="size-3.5" /> View library
+                    View library
                   </Link>
                 </CardContent>
               </Card>
               <Card className="card-hover">
                 <CardHeader className="pb-2">
-                  <CardDescription>Latest report</CardDescription>
+                  <CardDescription className="flex items-center gap-1.5">
+                    <Sparkles className="size-3.5" /> Latest report
+                  </CardDescription>
                   <CardTitle className="line-clamp-1 text-base font-semibold leading-6">
                     {latest ? latest.title : "None yet"}
                   </CardTitle>
@@ -101,7 +105,7 @@ export default function Dashboard() {
                     <span className="text-sm text-muted-foreground">Generate your first report</span>
                   )}
                 </CardContent>
-                </Card>
+              </Card>
             </div>
 
             {/* Empty state */}
@@ -140,7 +144,7 @@ export default function Dashboard() {
                         <CardHeader className="pb-3">
                           <div className="flex items-start justify-between gap-2">
                             <CardTitle className="text-base">{ds.name}</CardTitle>
-                            <Badge variant="secondary" className="tabular-nums">
+                            <Badge variant="secondary" className="tabular-nums font-normal">
                               {ds.rowCount.toLocaleString()} rows
                             </Badge>
                           </div>
@@ -148,7 +152,7 @@ export default function Dashboard() {
                             {ds.columns.length} columns · {ds.fileName}
                           </CardDescription>
                         </CardHeader>
-                        <CardContent className="mt-auto flex flex-wrap gap-2">
+                        <CardContent className="mt-auto flex flex-wrap gap-2 border-t pt-4">
                           <Button asChild size="sm" variant="secondary" className="gap-1.5">
                             <Link to={`/datasets/${ds._id}/report`}>
                               <Sparkles className="size-3.5" /> New report
@@ -184,15 +188,15 @@ export default function Dashboard() {
                         <Link
                           key={r._id}
                           to={`/reports/${r._id}`}
-                          className="flex items-center justify-between rounded-xl border bg-card px-4 py-3 transition-colors hover:border-primary/40 hover:bg-accent/40"
+                          className="group flex items-center justify-between rounded-xl border bg-card px-4 py-3 transition-colors hover:border-primary/40 hover:bg-accent/40"
                         >
                           <div className="min-w-0">
                             <p className="truncate text-sm font-medium">{r.title}</p>
                             <p className="text-xs text-muted-foreground">
-                              {new Date(r.createdAt).toLocaleDateString()}
+                              {new Date(r.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                             </p>
                           </div>
-                          <ArrowRight className="size-4 shrink-0 text-muted-foreground" />
+                          <ArrowRight className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
                         </Link>
                       ))}
                     </div>
