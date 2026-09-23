@@ -341,7 +341,9 @@ Result:
             </motion.div>
           </div>
         </div>
-      </section>      {/* Final CTA — dark, confident, no gradient tricks */}
+      </section>
+
+      {/* Final CTA — dark, confident, no gradient tricks */}
       <section className="py-20 sm:py-24">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <motion.div

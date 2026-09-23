@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AppShell } from "@/components/AppShell";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -18,8 +19,10 @@ export default function ReportsLibrary() {
   const removeReport = useMutation(api.reports.remove);
   const [search, setSearch] = useState("");
 
-  const datasetName = (id: string) =>
-    datasets?.find((d) => d._id === id)?.name ?? "Deleted dataset";
+  const datasetName = useCallback(
+    (id: string) => datasets?.find((d) => d._id === id)?.name ?? "Deleted dataset",
+    [datasets],
+  );
 
   const filtered = useMemo(() => {
     if (!reports) return [];
@@ -31,7 +34,7 @@ export default function ReportsLibrary() {
         r.intent.toLowerCase().includes(q) ||
         datasetName(r.datasetId).toLowerCase().includes(q),
     );
-  }, [reports, datasets, search]);
+  }, [reports, datasetName, search]);
 
   const handleDelete = async (id: Id<"reports">) => {
     if (!confirm("Delete this report?")) return;
@@ -46,19 +49,18 @@ export default function ReportsLibrary() {
   return (
     <AppShell>
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="font-display text-2xl font-bold tracking-tight">Reports</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Every generated report, saved and searchable.
-            </p>
-          </div>
-          <Button asChild className="gap-2">
-            <Link to="/reports/new">
-              <FileBarChart className="size-4" /> New report
+        <PageHeader
+          eyebrow="Library"
+          title="Reports"
+          description="Every generated report, saved and searchable."
+          actions={
+            <Button asChild className="gap-2">
+              <Link to="/reports/new">
+                <FileBarChart className="size-4" /> New report
               </Link>
-          </Button>
-        </div>
+            </Button>
+          }
+        />
 
         <div className="relative">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -122,7 +124,7 @@ export default function ReportsLibrary() {
                   </Link>
                   <button
                     onClick={() => handleDelete(r._id)}
-                    className="rounded-md p-1.5 text-muted-foreground opacity-0 transition-opacity hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
+                    className="rounded-md p-1.5 text-muted-foreground transition-opacity hover:bg-destructive/10 hover:text-destructive lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100"
                     title="Delete report"
                   >
                     <Trash2 className="size-4" />

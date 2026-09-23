@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AppShell } from "@/components/AppShell";
+import { PageHeader } from "@/components/PageHeader";
 import {
   Select,
   SelectContent,
@@ -18,10 +19,9 @@ import {
 } from "@/components/ui/select";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import {
   AlertTriangle,
-  ArrowLeft,
   CheckCircle2,
   Download,
   FileSpreadsheet,
@@ -104,25 +104,27 @@ export default function Upload() {
   return (
     <AppShell>
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
-        <div>
-          <Link to="/dashboard" className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" /> Back to dashboard
-          </Link>
-          <h1 className="font-display text-2xl font-bold tracking-tight">Upload data</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            CSV or Excel, up to {MAX_FILE_LABEL}. Column types are detected automatically — adjust anything that looks wrong.
-          </p>
-          <p className="mt-2 flex items-center gap-1.5 text-sm">
-            <a
-              href="/sample-data.csv"
-              download
-              className="inline-flex items-center gap-1.5 font-medium text-primary hover:underline"
-            >
-              <Download className="size-4" />
-              Download a sample dataset to try it out
-            </a>
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="Data"
+          title="Upload data"
+          backTo="/dashboard"
+          backLabel="Back to dashboard"
+          description={
+            <div className="flex flex-col gap-2">
+              <span>
+                CSV or Excel, up to {MAX_FILE_LABEL}. Column types are detected automatically — adjust anything that looks wrong.
+              </span>
+              <a
+                href="/sample-data.csv"
+                download
+                className="inline-flex w-fit items-center gap-1.5 font-medium text-primary hover:underline"
+              >
+                <Download className="size-4" />
+                Download a sample dataset to try it out
+              </a>
+            </div>
+          }
+        />
 
         {!parsed && (
           <label

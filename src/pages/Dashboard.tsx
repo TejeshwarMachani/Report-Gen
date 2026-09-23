@@ -9,6 +9,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppShell } from "@/components/AppShell";
+import { PageHeader } from "@/components/PageHeader";
 import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
@@ -36,20 +37,18 @@ export default function Dashboard() {
   return (
     <AppShell>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="eyebrow">{org?.name ?? "Workspace"}</p>
-            <h1 className="font-display mt-1.5 text-2xl font-bold tracking-tight sm:text-3xl">
-              Welcome{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
-            </h1>
-          </div>
-          <Button asChild className="gap-2 self-start sm:self-auto">
-            <Link to="/upload">
-              <Plus className="size-4" />
-              New dataset
-            </Link>
-          </Button>
-        </header>
+        <PageHeader
+          eyebrow={org?.name ?? "Workspace"}
+          title={`Welcome${user?.name ? `, ${user.name.split(" ")[0]}` : ""}`}
+          actions={
+            <Button asChild className="gap-2">
+              <Link to="/upload">
+                <Plus className="size-4" />
+                New dataset
+              </Link>
+            </Button>
+          }
+        />
 
         {loading ? (
           <div className="grid gap-4 sm:grid-cols-3">

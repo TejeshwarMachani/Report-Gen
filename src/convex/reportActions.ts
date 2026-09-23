@@ -79,7 +79,8 @@ function buildCharts(rows: unknown[][], cols: Doc<"datasets">["columns"]): Repor
 export const generateReport = action({
   args: { datasetId: v.id("datasets"), intent: v.string() },
   handler: async (ctx, { datasetId, intent }) => {
-    const dataset: Doc<"datasets"> = await ctx.runQuery(api.datasets.get, { datasetId });
+    const dataset = await ctx.runQuery(api.datasets.get, { datasetId });
+    if (!dataset) throw new Error("Dataset not found");
 
     if (dataset.rowCount < 5) {
       throw new Error(

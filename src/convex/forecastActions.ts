@@ -19,6 +19,7 @@ export const runForecast = action({
   },
   handler: async (ctx, { datasetId, metricColumn, dateColumn, horizon }) => {
     const dataset = await ctx.runQuery(api.datasets.get, { datasetId });
+    if (!dataset) throw new Error("Dataset not found");
     const cols = dataset.columns;
     const dIdx = cols.findIndex((c) => c.name === dateColumn);
     const mIdx = cols.findIndex((c) => c.name === metricColumn);

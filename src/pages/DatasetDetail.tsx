@@ -4,6 +4,7 @@ import { useParams, Link } from "react-router";
 import { useAction, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AppShell } from "@/components/AppShell";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,7 +25,6 @@ import {
 } from "@/components/ui/select";
 import { columnTypeColors, fmtBytes, fmtNumber } from "@/lib/report";
 import {
-  ArrowLeft,
   CalendarClock,
   MessageSquareText,
   Sparkles,
@@ -52,16 +52,21 @@ export default function DatasetDetail() {
   const [horizon, setHorizon] = useState<string>("6");
   const [running, setRunning] = useState(false);
 
+  // Default to the first usable columns so forecasting is one click away,
+  // while still letting the user override the choice.
+  const selectedMetric = metricCol || numericCols[0]?.name || "";
+  const selectedDate = dateCol || dateCols[0]?.name || "";
+
   const selectedForecast = forecasts?.[0];
 
   const handleRunForecast = async () => {
-    if (!datasetId || !metricCol || !dateCol) return;
+    if (!datasetId || !selectedMetric || !selectedDate) return;
     setRunning(true);
     try {
       await runForecast({
         datasetId: datasetId as Id<"datasets">,
-        metricColumn: metricCol,
-        dateColumn: dateCol,
+        metricColumn: selectedMetric,
+        dateColumn: selectedDate,
         horizon: parseInt(horizon, 10),
       });
       toast.success("Forecast ready");
@@ -75,23 +80,33 @@ export default function DatasetDetail() {
   return (
     <AppShell>
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div>
-          <Link to="/dashboard" className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" /> Back to dashboard
-          </Link>
-          {dataset === undefined ? (
-            <Skeleton className="h-9 w-64" />
-          ) : dataset === null ? (
-            <p className="text-sm text-muted-foreground">Dataset not found.</p>
-          ) : (
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h1 className="font-display text-2xl font-bold tracking-tight">{dataset.name}</h1>
-                <p className="mt-1 text-sm text-muted-foreground tabular-nums">
-                  {dataset.rowCount.toLocaleString()} rows · {dataset.columns.length} columns · {fmtBytes(dataset.fileSize)} · {dataset.fileName}
-                </p>
-              </div>
-              <div className="flex gap-2">
+        {dataset === undefined ? (
+          <div className="flex flex-col gap-4">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-5 w-80" />
+          </div>
+        ) : dataset === null ? (
+          <PageHeader
+            eyebrow="Dataset"
+            title="Dataset not found"
+            backTo="/dashboard"
+            backLabel="Back to dashboard"
+            description="This dataset may have been deleted, or it belongs to another workspace."
+          />
+        ) : (
+          <PageHeader
+            eyebrow="Dataset"
+            title={dataset.name}
+            backTo="/dashboard"
+            backLabel="Back to dashboard"
+            description={
+              <span className="tabular-nums">
+                {dataset.rowCount.toLocaleString()} rows · {dataset.columns.length} columns · {fmtBytes(dataset.fileSize)} · {dataset.fileName}
+              </span>
+            }
+            actions={
+              <>
                 <Button asChild size="sm" className="gap-1.5">
                   <Link to={`/datasets/${datasetId}/report`}>
                     <Sparkles className="size-3.5" /> New report
@@ -102,16 +117,21 @@ export default function DatasetDetail() {
                     <MessageSquareText className="size-3.5" /> Chat with data
                   </Link>
                 </Button>
-              </div>
-            </div>
-          )}
-        </div>
+              </>
+            }
+          />
+        )}
 
         {dataset && (
           <>
             {/* Columns */}
             <section>
-              <h2 className="font-display mb-3 text-lg font-semibold">Columns</h2>
+              <div className="mb-3">
+                <h2 className="font-display text-lg font-semibold">Columns</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Detected types and data quality — this is what the analysis runs on.
+                </p>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {dataset.columns.map((c) => (
                   <Card key={c.name} className="card-hover">
@@ -151,7 +171,7 @@ export default function DatasetDetail() {
                       <div className="flex flex-wrap items-end gap-3">
                         <div className="flex flex-col gap-1.5">
                           <span className="text-xs font-medium text-muted-foreground">Metric</span>
-                          <Select value={metricCol} onValueChange={setMetricCol}>
+                          <Select value={selectedMetric} onValueChange={setMetricCol}>
                             <SelectTrigger className="h-9 w-[180px]">
                               <SelectValue placeholder="Number column" />
                             </SelectTrigger>
@@ -164,7 +184,7 @@ export default function DatasetDetail() {
                         </div>
                         <div className="flex flex-col gap-1.5">
                           <span className="text-xs font-medium text-muted-foreground">Date column</span>
-                          <Select value={dateCol} onValueChange={setDateCol}>
+                          <Select value={selectedDate} onValueChange={setDateCol}>
                             <SelectTrigger className="h-9 w-[180px]">
                               <SelectValue placeholder="Date column" />
                             </SelectTrigger>
@@ -188,7 +208,7 @@ export default function DatasetDetail() {
                             </SelectContent>
                           </Select>
                         </div>
-                        <Button onClick={handleRunForecast} disabled={running || !metricCol || !dateCol} className="gap-2">
+                        <Button onClick={handleRunForecast} disabled={running || !selectedMetric || !selectedDate} className="gap-2">
                           {running ? <CalendarClock className="size-4 animate-pulse" /> : <TrendingUp className="size-4" />}
                           {running ? "Computing…" : "Run forecast"}
                         </Button>

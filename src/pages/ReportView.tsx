@@ -126,7 +126,8 @@ export default function ReportView() {
             {/* Title row */}
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
-                <h1 className="font-display text-2xl font-bold tracking-tight">{report.title}</h1>
+                <p className="eyebrow">Generated report</p>
+                <h1 className="font-display mt-1.5 text-2xl font-bold tracking-tight">{report.title}</h1>
                 <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                   <Badge variant="secondary" className="capitalize">
                     {report.status}
@@ -152,9 +153,9 @@ export default function ReportView() {
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {report.headlineMetrics.map((m, i) => (
                   <Card key={i} className="print-block">
-                    <CardContent className="px-1 py-1">
-                      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{m.label}</p>
-                      <p className="font-display tabular-nums mt-1 text-2xl font-bold">{m.value}</p>
+                    <CardContent>
+                      <p className="eyebrow">{m.label}</p>
+                      <p className="font-display tabular-nums mt-2 text-2xl font-bold">{m.value}</p>
                       {m.change && (
                         <p
                           className={`mt-0.5 flex items-center gap-1 text-xs font-medium ${

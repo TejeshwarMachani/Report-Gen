@@ -1,7 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { columnTypeValidator } from "./schema";
-import { requireDatasetInOrg, requireOrg, requireOrgOrNull, requireUserId } from "./helpers";
+import { getOrgReadOnly, requireDatasetInOrg, requireOrg, requireOrgOrNull, requireUserId } from "./helpers";
 
 export const list = query({
   args: {},
@@ -16,10 +16,16 @@ export const list = query({
   },
 });
 
+// Returns null (instead of throwing) when the dataset is missing or belongs to
+// another workspace, so the UI can render a friendly not-found state.
 export const get = query({
   args: { datasetId: v.id("datasets") },
   handler: async (ctx, { datasetId }) => {
-    const { dataset } = await requireDatasetInOrg(ctx, datasetId);
+    const userId = await requireUserId(ctx);
+    const dataset = await ctx.db.get(datasetId);
+    if (!dataset) return null;
+    const org = await getOrgReadOnly(ctx, userId);
+    if (!org || dataset.orgId !== org._id) return null;
     return dataset;
   },
 });

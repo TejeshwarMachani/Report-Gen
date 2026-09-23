@@ -4,7 +4,6 @@ import { v } from "convex/values";
 import { action } from "./_generated/server";
 import { api } from "./_generated/api";
 import { computeAnswer, formatResult } from "./analytics";
-import type { Id } from "./_generated/dataModel";
 
 type Computation = ReturnType<typeof computeAnswer>;
 
@@ -27,6 +26,7 @@ export const answerQuestion = action({
   },
   handler: async (ctx, { datasetId, computation, history }) => {
     const dataset = await ctx.runQuery(api.datasets.get, { datasetId });
+    if (!dataset) throw new Error("Dataset not found");
     const { kind, description, result } = computation as Computation;
 
     // Deterministic fallback answer (never invents numbers).
@@ -86,7 +86,7 @@ Write the assistant reply. If the result is null, say the data couldn't answer i
       query: {
         kind,
         description,
-        result: (result ?? null) as any,
+        result: result ?? null,
       },
       chart: computation.chart ?? undefined,
     });

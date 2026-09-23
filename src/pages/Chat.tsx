@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SeriesBarChart, SeriesLineChart, SeriesPieChart } from "@/components/ChartFrame";
-import { fmtDateTime } from "@/lib/report";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -34,8 +33,11 @@ export default function Chat() {
   const [openQuery, setOpenQuery] = useState<Record<string, boolean>>({});
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Mirrors `waiting` for the synchronous double-submit guard inside `ask`.
   const waitingRef = useRef(false);
-  waitingRef.current = waiting;
+  useEffect(() => {
+    waitingRef.current = waiting;
+  }, [waiting]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -46,7 +48,7 @@ export default function Chat() {
     setInput("");
     setWaiting(true);
     try {
-      const { userMsgId, computation } = await sendQuestion({
+      const { computation } = await sendQuestion({
         datasetId: datasetId as Id<"datasets">,
         question,
       });
@@ -71,16 +73,18 @@ export default function Chat() {
 
   return (
     <AppShell>
-      <div className="mx-auto flex h-[calc(100vh-140px)] w-full max-w-3xl flex-col">
+      {/* dvh keeps the composer above mobile browser chrome; vh is the fallback. */}
+      <div className="mx-auto flex h-[calc(100vh-10.5rem)] w-full max-w-3xl flex-col supports-[height:100dvh]:h-[calc(100dvh-10.5rem)]">
         {/* Header */}
-        <div className="mb-4">
+        <div className="mb-4 shrink-0">
           <Link
             to={dataset ? `/datasets/${dataset._id}` : "/dashboard"}
-            className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+            className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="size-4" /> Back to dataset
           </Link>
-          <div className="flex items-center gap-2">
+          <p className="eyebrow">Chat with data</p>
+          <div className="mt-1.5 flex items-center gap-2">
             <MessageSquareText className="size-5 text-primary" />
             <h1 className="font-display text-xl font-bold tracking-tight">
               {dataset ? dataset.name : "Chat"}
@@ -92,7 +96,7 @@ export default function Chat() {
         </div>
 
         {/* Messages */}
-        <div className="thin-scroll flex-1 space-y-4 overflow-y-auto pb-4">
+        <div className="thin-scroll min-h-0 flex-1 space-y-4 overflow-y-auto pb-4">
           {messages === undefined ? (
             <div className="space-y-3">
               <Skeleton className="h-16 w-2/3 rounded-2xl" />
@@ -193,7 +197,7 @@ export default function Chat() {
         </div>
 
         {/* Input */}
-        <div className="flex gap-2 border-t pt-3">
+        <div className="flex shrink-0 gap-2 border-t pt-3">
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}

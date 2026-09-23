@@ -20,13 +20,15 @@ export const list = query({
   },
 });
 
+// Returns null (instead of throwing) when the report is missing or belongs to
+// another workspace, so the UI can render a friendly not-found state.
 export const get = query({
   args: { reportId: v.id("reports") },
   handler: async (ctx, { reportId }) => {
     const org = await requireOrgOrNull(ctx);
-    if (!org) throw new Error("Report not found");
+    if (!org) return null;
     const report = await ctx.db.get(reportId);
-    if (!report || report.orgId !== org._id) throw new Error("Report not found");
+    if (!report || report.orgId !== org._id) return null;
     return report;
   },
 });

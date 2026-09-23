@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { useAction, useMutation, useQuery } from "convex/react";
+import { useAction, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { AppShell } from "@/components/AppShell";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Id } from "@/convex/_generated/dataModel";
-import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 const PRESET_INTENTS = [
@@ -41,8 +41,11 @@ export default function NewReport() {
   const [customIntent, setCustomIntent] = useState<string>("");
   const [generating, setGenerating] = useState(false);
 
+  // Arriving from the library (no dataset in the URL) still defaults to the first one.
+  const selectedDatasetId = datasetId || datasets?.[0]?._id || "";
+
   const handleGenerate = async () => {
-    if (!datasetId) return;
+    if (!selectedDatasetId) return;
     const finalIntent =
       intent === "custom" ? customIntent.trim() : intent;
     if (!finalIntent) {
@@ -52,7 +55,7 @@ export default function NewReport() {
     setGenerating(true);
     try {
       const reportId = await generateReport({
-        datasetId: datasetId as Id<"datasets">,
+        datasetId: selectedDatasetId as Id<"datasets">,
         intent: finalIntent,
       });
       navigate(`/reports/${reportId}`);
@@ -90,15 +93,13 @@ export default function NewReport() {
   return (
     <AppShell>
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-        <div>
-          <Link to="/dashboard" className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="size-4" /> Back
-          </Link>
-          <h1 className="font-display text-2xl font-bold tracking-tight">New report</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Pick a dataset and what the report should focus on.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="Reports"
+          title="New report"
+          backTo="/reports"
+          backLabel="Back to reports"
+          description="Pick a dataset and what the report should focus on."
+        />
 
         <Card>
           <CardHeader>
@@ -112,7 +113,7 @@ export default function NewReport() {
                 No datasets yet — <Link to="/upload" className="text-primary hover:underline">upload one first</Link>.
               </div>
             ) : (
-              <Select value={datasetId} onValueChange={setDatasetId}>
+              <Select value={selectedDatasetId} onValueChange={setDatasetId}>
                 <SelectTrigger>
                   <SelectValue placeholder="Choose a dataset" />
                 </SelectTrigger>
@@ -187,7 +188,7 @@ export default function NewReport() {
         </Card>
 
         <div className="flex justify-end">
-          <Button onClick={handleGenerate} disabled={!datasetId || generating} className="gap-2">
+          <Button onClick={handleGenerate} disabled={!selectedDatasetId || generating} className="gap-2">
             <Sparkles className="size-4" />
             Generate report
           </Button>
