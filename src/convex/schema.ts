@@ -114,6 +114,9 @@ const schema = defineSchema(
           }),
         ),
       ),
+      // "ai" = model-written narrative; "deterministic" = written from the
+      // computed fact pack because the AI gateway was unavailable.
+      narrativeSource: v.optional(v.union(v.literal("ai"), v.literal("deterministic"))),
       rating: v.optional(v.union(v.literal("up"), v.literal("down"))),
       createdAt: v.number(),
     })

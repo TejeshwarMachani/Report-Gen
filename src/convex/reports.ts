@@ -101,8 +101,14 @@ export const finalize = mutation({
         data: v.array(v.object({ label: v.string(), value: v.number() })),
       }),
     ),
+    // "deterministic" means the narrative was written from computed stats
+    // because the AI gateway was unavailable. Surfaces a note in the report view.
+    narrativeSource: v.optional(v.union(v.literal("ai"), v.literal("deterministic"))),
   },
-  handler: async (ctx, { reportId, headlineMetrics, narrative, insights, charts }) => {
+  handler: async (
+    ctx,
+    { reportId, headlineMetrics, narrative, insights, charts, narrativeSource },
+  ) => {
     const org = await requireOrg(ctx);
     const report = await ctx.db.get(reportId);
     if (!report || report.orgId !== org._id) throw new Error("Report not found");
@@ -112,6 +118,7 @@ export const finalize = mutation({
       narrative,
       insights,
       charts,
+      narrativeSource,
     });
   },
 });

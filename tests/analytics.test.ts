@@ -5,6 +5,7 @@
  */
 import { describe, expect, it } from "bun:test";
 import {
+  buildDeterministicNarrative,
   coerce,
   computeAnswer,
   detectOutliersIQR,
@@ -19,7 +20,7 @@ import {
   stdev,
   sum,
 } from "../src/convex/analytics";
-import type { DatasetDoc } from "../src/convex/analytics";
+import type { DatasetDoc, ReportFacts } from "../src/convex/analytics";
 
 // ---------------------------------------------------------------------------
 // Type coercion
@@ -266,5 +267,100 @@ describe("computeAnswer", () => {
     const r = computeAnswer(mockDataset, "what is the meaning of life?");
     expect(r.kind).toBe("unsupported");
     expect(r.description).toContain("Available columns");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Deterministic narrative — the report fallback used when the AI gateway is
+// unavailable. It must produce a complete report from computed stats alone.
+// ---------------------------------------------------------------------------
+
+const mockFacts: ReportFacts = {
+  datasetName: "Q3 Sales",
+  rowCount: 120,
+  columnCount: 4,
+  columns: [
+    { name: "Revenue", type: "number", missingPct: 0 },
+    { name: "Region", type: "category", missingPct: 1.5 },
+  ],
+  metrics: [
+    {
+      column: "Revenue",
+      sum: 50000,
+      mean: 500,
+      median: 480,
+      min: 100,
+      max: 900,
+      stdev: 120,
+      count: 100,
+    },
+  ],
+  dateSpan: { column: "Date", start: "Jan 2024", end: "Dec 2024" },
+  trends: [
+    { column: "Revenue", direction: "down", pctChange: -12.5, r2: "0.82" },
+    { column: "Units", direction: "up", pctChange: 8, r2: "0.40" },
+  ],
+  topCategories: [
+    {
+      column: "Region",
+      top: [
+        { label: "East", value: 30000 },
+        { label: "West", value: 20000 },
+      ],
+    },
+  ],
+  outliers: [{ column: "Revenue", count: 2, min: 850, max: 900 }],
+  dataQuality: ["Region is missing 2% of values"],
+};
+
+describe("buildDeterministicNarrative", () => {
+  it("fills every narrative section with no AI involved", () => {
+    const n = buildDeterministicNarrative(mockFacts, "Sales performance overview");
+    expect(n.headline.length).toBeGreaterThan(0);
+    expect(n.summary.length).toBeGreaterThan(0);
+    expect(n.watch.length).toBeGreaterThan(0);
+    expect(n.insights.length).toBeGreaterThan(0);
+  });
+
+  it("cites the computed totals and date span verbatim", () => {
+    const n = buildDeterministicNarrative(mockFacts, "Monthly summary");
+    expect(n.headline).toContain("Q3 Sales");
+    expect(n.headline).toContain("50,000");
+    expect(n.summary).toContain("120 rows");
+    expect(n.summary).toContain("Jan 2024");
+  });
+
+  it("flags the declining measure in what-to-watch", () => {
+    const n = buildDeterministicNarrative(mockFacts, "Operations snapshot");
+    expect(n.watch).toContain("Revenue");
+    expect(n.watch).toContain("12.5%");
+  });
+
+  it("reports the leading category with its share of the total", () => {
+    const n = buildDeterministicNarrative(mockFacts, "Sales performance overview");
+    expect(n.insights.join(" ")).toContain("East");
+    expect(n.insights.join(" ")).toContain("60%"); // 30000 of 50000
+  });
+
+  it("caps insights at five non-empty lines", () => {
+    const n = buildDeterministicNarrative(mockFacts, "Sales performance overview");
+    expect(n.insights).toHaveLength(5);
+    for (const line of n.insights) expect(line.trim().length).toBeGreaterThan(0);
+  });
+
+  it("still produces a report when there are no numeric metrics", () => {
+    const bare: ReportFacts = {
+      ...mockFacts,
+      metrics: [],
+      trends: [],
+      topCategories: [],
+      outliers: [],
+      dataQuality: [],
+      dateSpan: undefined,
+    };
+    const n = buildDeterministicNarrative(bare, "Monthly summary");
+    expect(n.headline).toContain("120 rows");
+    expect(n.watch.length).toBeGreaterThan(0);
+    expect(n.insights).toHaveLength(0);
   });
 });

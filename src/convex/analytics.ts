@@ -355,6 +355,116 @@ export function buildReportFacts(dataset: DatasetDoc, rows: unknown[][]): Report
   };
 }
 
+// ---------- deterministic narrative (report fallback) ----------
+
+/**
+ * Writes the report narrative straight from the fact pack, with no AI at all.
+ * Used when the AI gateway is unavailable so report generation still completes.
+ * Every sentence is derived from a computed statistic — nothing is invented.
+ */
+export function buildDeterministicNarrative(
+  facts: ReportFacts,
+  intent: string,
+): { headline: string; summary: string; watch: string; insights: string[] } {
+  const top = facts.metrics[0];
+  const insights: string[] = [];
+
+  if (top) {
+    insights.push(
+      `${top.column} totals ${fmtNumber(top.sum)} across ${fmtNumber(top.count)} recorded values (average ${fmtNumber(top.mean)}, median ${fmtNumber(top.median)}).`,
+    );
+  }
+
+  for (const t of facts.trends.slice(0, 2)) {
+    const change = t.pctChange;
+    if (change == null) continue;
+    const verb =
+      t.direction === "up" ? "grew" : t.direction === "down" ? "fell" : "held broadly flat";
+    insights.push(
+      `${t.column} ${verb} ${Math.abs(change).toFixed(1)}% from the first to the last month (trend fit R² ${t.r2}).`,
+    );
+  }
+
+  const cat = facts.topCategories[0];
+  if (cat && cat.top.length) {
+    const lead = cat.top[0];
+    const total = cat.top.reduce((a, g) => a + g.value, 0);
+    const share = total > 0 ? (lead.value / total) * 100 : 0;
+    insights.push(
+      `"${lead.label}" leads ${cat.column} at ${fmtNumber(lead.value)} — about ${share.toFixed(0)}% of the ${fmtNumber(total)} across the top ${cat.top.length} groups.`,
+    );
+  }
+
+  if (top && top.max > top.min) {
+    insights.push(
+      `${top.column} ranges from ${fmtNumber(top.min)} to ${fmtNumber(top.max)} (standard deviation ${fmtNumber(top.stdev)}).`,
+    );
+  }
+
+  const outlier = facts.outliers.find((o) => o.count > 0);
+  if (outlier) {
+    insights.push(
+      `${outlier.count} value${outlier.count === 1 ? "" : "s"} in ${outlier.column} fall outside the typical range (${fmtNumber(outlier.min)} to ${fmtNumber(outlier.max)}).`,
+    );
+  }
+
+  if (facts.dataQuality.length) {
+    insights.push(`Data quality note: ${facts.dataQuality.slice(0, 2).join("; ")}.`);
+  }
+
+  const headline = top
+    ? `${facts.datasetName}: ${top.column} totals ${fmtNumber(top.sum)} across ${fmtNumber(facts.rowCount)} rows.`
+    : `${facts.datasetName}: ${fmtNumber(facts.rowCount)} rows across ${facts.columnCount} columns.`;
+
+  const summaryParts = [
+    `This ${intent.toLowerCase()} covers ${fmtNumber(facts.rowCount)} rows and ${facts.columnCount} columns.`,
+  ];
+  if (facts.dateSpan) {
+    summaryParts.push(
+      `The data spans ${facts.dateSpan.start} to ${facts.dateSpan.end} (${facts.dateSpan.column}).`,
+    );
+  }
+  if (top) {
+    summaryParts.push(`${top.column} is the primary measure, totalling ${fmtNumber(top.sum)}.`);
+  }
+  if (facts.trends.length) {
+    const up = facts.trends.filter((t) => t.direction === "up").length;
+    const down = facts.trends.filter((t) => t.direction === "down").length;
+    summaryParts.push(
+      `${up} measure${up === 1 ? "" : "s"} trended up and ${down} trended down over the period.`,
+    );
+  }
+
+  const watchParts: string[] = [];
+  const weakest = facts.trends.find((t) => t.direction === "down" && t.pctChange != null);
+  const weakestChange = weakest?.pctChange;
+  if (weakest && weakestChange != null) {
+    watchParts.push(
+      `${weakest.column} is the measure to watch — it declined ${Math.abs(weakestChange).toFixed(1)}% across the period.`,
+    );
+  }
+  if (outlier) {
+    watchParts.push(
+      `Review the ${outlier.count} outlier value${outlier.count === 1 ? "" : "s"} in ${outlier.column} before acting on the averages.`,
+    );
+  }
+  if (facts.dataQuality.length) {
+    watchParts.push(`These figures may be affected by: ${facts.dataQuality[0]}.`);
+  }
+  if (!watchParts.length) {
+    watchParts.push(
+      `No declining measures or unusual values were detected — keep tracking ${top?.column ?? "the main measure"} month over month.`,
+    );
+  }
+
+  return {
+    headline,
+    summary: summaryParts.join(" "),
+    watch: watchParts.join(" "),
+    insights: insights.slice(0, 5),
+  };
+}
+
 // ---------- chat: deterministic question answering ----------
 
 export interface ChatComputation {

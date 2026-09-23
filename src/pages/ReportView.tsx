@@ -27,6 +27,7 @@ import {
   ArrowUp,
   Download,
   FileText,
+  Info,
   Loader2,
   Sparkles,
   Trash2,
@@ -128,11 +129,20 @@ export default function ReportView() {
               <div className="min-w-0">
                 <p className="eyebrow">Generated report</p>
                 <h1 className="font-display mt-1.5 text-2xl font-bold tracking-tight">{report.title}</h1>
-                <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                   <Badge variant="secondary" className="capitalize">
                     {report.status}
                   </Badge>
                   {fmtDateTime(report.createdAt)}
+                  {report.narrativeSource === "deterministic" && (
+                    <span
+                      className="inline-flex items-center gap-1 rounded-full border bg-muted/50 px-2 py-0.5 text-[11px]"
+                      title="The AI narrative service was unavailable, so this report was written directly from the computed statistics."
+                    >
+                      <Info className="size-3" />
+                      Written from your data
+                    </span>
+                  )}
                 </p>
               </div>
               <div className="no-print flex flex-wrap gap-2">

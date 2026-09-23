@@ -3,7 +3,14 @@
 import { v } from "convex/values";
 import { action } from "./_generated/server";
 import { api } from "./_generated/api";
-import { buildReportFacts, coerce, fmtNumber, groupBySum, monthlyBuckets } from "./analytics";
+import {
+  buildDeterministicNarrative,
+  buildReportFacts,
+  coerce,
+  fmtNumber,
+  groupBySum,
+  monthlyBuckets,
+} from "./analytics";
 import type { Doc, Id } from "./_generated/dataModel";
 
 interface ReportChart {
@@ -149,13 +156,26 @@ WATCH: <1-3 sentences on what to monitor next, grounded in the fact pack>`;
         maxTokens: 1200,
       });
 
+      // Deterministic narrative written from the same fact pack. The numbers are
+      // already computed, so this on its own is a complete, accurate report.
+      const fallback = buildDeterministicNarrative(facts, intent);
+
       if (!completion.success || !completion.data) {
-        const detail = completion.error || "AI service unavailable";
-        const friendly =
-          detail === "Unauthorized"
-            ? "The AI service rejected the integration key (Unauthorized). The platform's VLY_INTEGRATION_KEY may be expired — refresh it in the project's Keys/API keys tab and redeploy."
-            : detail;
-        throw new Error(friendly);
+        // The AI gateway is unavailable (expired key, quota, outage). Don't fail
+        // the whole report — finish it with the deterministic narrative.
+        await ctx.runMutation(api.reports.finalize, {
+          reportId,
+          headlineMetrics,
+          narrative: {
+            headline: fallback.headline,
+            summary: fallback.summary,
+            watch: fallback.watch,
+          },
+          insights: fallback.insights,
+          charts,
+          narrativeSource: "deterministic",
+        });
+        return reportId;
       }
 
       const text = completion.data.choices?.[0]?.message?.content ?? "";
@@ -176,12 +196,23 @@ WATCH: <1-3 sentences on what to monitor next, grounded in the fact pack>`;
         .filter(Boolean)
         .slice(0, 5);
 
+      // A model can reply 200 with nothing usable — fall back rather than ship
+      // an empty report.
+      const useAi = Boolean(narrative.headline && narrative.summary);
+
       await ctx.runMutation(api.reports.finalize, {
         reportId,
         headlineMetrics,
-        narrative,
-        insights,
+        narrative: useAi
+          ? narrative
+          : {
+              headline: fallback.headline,
+              summary: fallback.summary,
+              watch: fallback.watch,
+            },
+        insights: useAi ? insights : fallback.insights,
         charts,
+        narrativeSource: useAi ? "ai" : "deterministic",
       });
       return reportId;
     } catch (e) {
