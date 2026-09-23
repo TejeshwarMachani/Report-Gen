@@ -56,7 +56,6 @@ export default function Landing() {
             <a href="#features" className="transition-colors hover:text-foreground">Product</a>
             <a href="#how" className="transition-colors hover:text-foreground">How it works</a>
             <a href="#trust" className="transition-colors hover:text-foreground">Accuracy</a>
-            <a href="#pricing" className="transition-colors hover:text-foreground">Pricing</a>
           </nav>
           <div className="flex items-center gap-1.5">
             <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
@@ -342,70 +341,7 @@ Result:
             </motion.div>
           </div>
         </div>
-      </section>
-
-      {/* Pricing */}
-      <section id="pricing" className="border-y bg-muted/40 py-20 sm:py-24">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <motion.div {...fadeUp} className="max-w-2xl">
-            <p className="eyebrow">Pricing</p>
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-              Start free. Upgrade when it earns its keep.
-            </h2>
-          </motion.div>
-          <div className="mt-12 grid gap-4 md:grid-cols-2">
-            <motion.div {...fadeUp}>
-              <Card className="h-full">
-                <CardContent className="flex h-full flex-col p-6">
-                  <p className="text-sm font-semibold">Free</p>
-                  <p className="font-display mt-2 text-4xl font-bold tabular-nums">$0</p>
-                  <p className="mt-1 text-sm text-muted-foreground">For trying it on one real dataset.</p>
-                  <ul className="mt-6 flex flex-1 flex-col gap-2.5 text-sm">
-                    {["1 workspace", "1 dataset", "Unlimited reading & export", "Chat & forecasting included"].map((t) => (
-                      <li key={t} className="flex items-start gap-2.5">
-                        <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button asChild variant="outline" className="mt-8 w-full">
-                    <Link to={dashboardCta}>Get started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-            <motion.div {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.07 }}>
-              <Card className="relative h-full border-primary/50">
-                <CardContent className="flex h-full flex-col p-6">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold">Pro</p>
-                    <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary">
-                      Coming soon
-                    </span>
-                  </div>
-                  <p className="font-display mt-2 text-4xl font-bold tabular-nums">
-                    $29<span className="text-base font-medium text-muted-foreground">/mo</span>
-                  </p>
-                  <p className="mt-1 text-sm text-muted-foreground">For teams reporting every week.</p>
-                  <ul className="mt-6 flex flex-1 flex-col gap-2.5 text-sm">
-                    {["Multiple datasets", "More reports per month", "Team seats with roles", "Priority report generation"].map((t) => (
-                      <li key={t} className="flex items-start gap-2.5">
-                        <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                        {t}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button asChild className="mt-8 w-full">
-                    <Link to={dashboardCta}>Start free, upgrade later</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA — dark, confident, no gradient tricks */}
+      </section>      {/* Final CTA — dark, confident, no gradient tricks */}
       <section className="py-20 sm:py-24">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <motion.div

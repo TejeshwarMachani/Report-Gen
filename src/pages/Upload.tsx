@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   CheckCircle2,
+  Download,
   FileSpreadsheet,
   Loader2,
   UploadCloud,
@@ -110,6 +111,16 @@ export default function Upload() {
           <h1 className="font-display text-2xl font-bold tracking-tight">Upload data</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             CSV or Excel, up to {MAX_FILE_LABEL}. Column types are detected automatically — adjust anything that looks wrong.
+          </p>
+          <p className="mt-2 flex items-center gap-1.5 text-sm">
+            <a
+              href="/sample-data.csv"
+              download
+              className="inline-flex items-center gap-1.5 font-medium text-primary hover:underline"
+            >
+              <Download className="size-4" />
+              Download a sample dataset to try it out
+            </a>
           </p>
         </div>
 
