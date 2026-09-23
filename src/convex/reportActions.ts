@@ -149,7 +149,12 @@ WATCH: <1-3 sentences on what to monitor next, grounded in the fact pack>`;
       });
 
       if (!completion.success || !completion.data) {
-        throw new Error(completion.error || "AI service unavailable");
+        const detail = completion.error || "AI service unavailable";
+        const friendly =
+          detail === "Unauthorized"
+            ? "The AI service rejected the integration key (Unauthorized). The platform's VLY_INTEGRATION_KEY may be expired — refresh it in the project's Keys/API keys tab and redeploy."
+            : detail;
+        throw new Error(friendly);
       }
 
       const text = completion.data.choices?.[0]?.message?.content ?? "";
